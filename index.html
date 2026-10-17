@@ -103,6 +103,12 @@
     margin: 0;
   }
   .role { font-size: clamp(1.15rem, 2.2vw, 1.4rem); font-weight: 500; margin: .75rem 0 1.25rem; color: var(--accent); }
+  .also {
+    margin: -.6rem 0 1.4rem;
+    font-size: .98rem; color: var(--muted);
+    display: flex; gap: .5rem; align-items: baseline;
+  }
+  .also span { font-family: var(--mono); color: var(--accent); font-weight: 500; }
   .lede { max-width: 34em; margin: 0 0 2rem; color: var(--ink); }
   .actions { display: flex; flex-wrap: wrap; gap: .75rem; }
   .btn {
@@ -203,6 +209,8 @@
     background: transparent; border: 0; outline: none;
     color: var(--panel-ink); font: inherit; caret-color: var(--panel-amber);
   }
+  .term-line input::placeholder { color: var(--panel-muted); opacity: .7; }
+  .term-line input:focus::placeholder { opacity: .45; }
   .term-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
   .chip {
     font-family: var(--mono); font-size: .82rem;
@@ -402,7 +410,8 @@
       <div>
         <h1>Bijit Kalita</h1>
         <p class="role">DevOps & Cloud Automation Engineer</p>
-        <p class="lede">I build cloud infrastructure and pipelines that provision, scan, deploy and heal themselves on AWS, Kubernetes and GitOps. Alongside that, I build AI-powered automation and SaaS backends, and ship production websites fast with AI-assisted development.</p>
+        <p class="also"><span aria-hidden="true">+</span> AI automation, SaaS backends and AI-assisted development</p>
+        <p class="lede">I build cloud infrastructure and pipelines that provision, scan, deploy and heal themselves on AWS, Kubernetes and GitOps. At GenLeadAI I run production automation workflows and help architect ARIA, an AI-powered multi-tenant SaaS.</p>
         <div class="actions">
           <a class="btn primary" href="mailto:bijit987kalita@gmail.com">Email me</a>
           <a class="btn" href="resume.pdf" download>Download resume</a>
@@ -436,7 +445,7 @@
           <div class="term-out" id="termOut" aria-live="polite"></div>
           <form class="term-line" id="termForm" autocomplete="off">
             <label for="termInput" class="p">bijit@portfolio:~$</label>
-            <input id="termInput" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type a terminal command">
+            <input id="termInput" type="text" placeholder="Type here, try help" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type a terminal command">
           </form>
         </div>
       </div>
