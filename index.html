@@ -171,6 +171,75 @@
   .run-foot[hidden] { display: block; opacity: 0; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* Interactive terminal */
+  .term {
+    background: var(--panel); color: var(--panel-ink);
+    border: 1px solid var(--panel-line); border-radius: 10px;
+    font-family: var(--mono); font-size: .9rem;
+    overflow: hidden;
+  }
+  .term:focus-within { border-color: var(--panel-amber); }
+  .term-head {
+    display: flex; align-items: center; gap: .9rem;
+    padding: .7rem 1rem; border-bottom: 1px solid var(--panel-line);
+    color: var(--panel-muted); font-size: .82rem;
+  }
+  .dots { display: inline-flex; gap: .4rem; }
+  .dots i { width: .7rem; height: .7rem; border-radius: 50%; background: var(--panel-line); display: block; }
+  .term-body { height: 24rem; overflow-y: auto; padding: 1rem 1.1rem; cursor: text; }
+  .term-out > div { white-space: pre-wrap; word-break: break-word; margin-bottom: .2rem; }
+  .term-out .cmd { color: var(--panel-ink); margin-top: .6rem; }
+  .term-out .tbl { white-space: pre; overflow-x: auto; }
+  @media (max-width: 520px) { .term { font-size: .8rem; } .term-body { height: 22rem; } }
+  .term-out .cmd .p, .term-line .p { color: var(--panel-pass); }
+  .term-out .dim { color: var(--panel-muted); }
+  .term-out .hl { color: var(--panel-amber); }
+  .term-out .ok { color: var(--panel-pass); }
+  .term-out .err { color: #F07178; }
+  .term-out a { color: var(--panel-amber); }
+  .term-line { display: flex; align-items: center; gap: .6rem; margin: .6rem 0 0; }
+  .term-line input {
+    flex: 1; min-width: 0;
+    background: transparent; border: 0; outline: none;
+    color: var(--panel-ink); font: inherit; caret-color: var(--panel-amber);
+  }
+  .term-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+  .chip {
+    font-family: var(--mono); font-size: .82rem;
+    padding: .4rem .75rem; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    cursor: pointer;
+  }
+  .chip:hover { border-color: var(--ink); }
+  code { font-family: var(--mono); font-size: .92em; }
+
+  /* 3D cluster */
+  :root { --node: #2F6FAE; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --node: #3B82C4; } }
+  .cluster { position: relative; height: 400px; cursor: grab; touch-action: pan-y; user-select: none; }
+  .cluster:active { cursor: grabbing; }
+  .cluster canvas { display: block; width: 100% !important; height: 100% !important; }
+  .cluster-foot {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    display: flex; justify-content: space-between; gap: 1rem;
+    font-family: var(--mono); font-size: .76rem; color: var(--muted);
+    pointer-events: none;
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; margin-top: .9rem; font-size: .82rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: .4rem; }
+  .dot { width: .65rem; height: .65rem; border-radius: 50%; display: inline-block; }
+  .dot.cp { background: var(--accent); }
+  .dot.node { background: var(--node); border-radius: 2px; }
+  .dot.pod { background: var(--pass); }
+  .dot.heal { background: var(--minus); }
+  .no-webgl .cluster-wrap { display: none; }
+  .no-webgl .hero .wrap { grid-template-columns: 1fr; }
+
+  /* Pipeline demo in Projects */
+  .pipeline-demo { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; margin-bottom: 2.5rem; }
+  .pipeline-note h3 { margin: 0 0 .6rem; font-size: 1.2rem; font-weight: 600; }
+  .pipeline-note p { margin: 0; color: var(--muted); }
+
   /* Sections */
   section.block { padding: 4.5rem 0; border-top: 1px solid var(--line); }
   h2 { font-size: clamp(1.6rem, 3vw, 2rem); letter-spacing: -0.015em; margin: 0 0 .5rem; font-weight: 600; }
@@ -279,6 +348,8 @@
     .hero { padding: 3rem 0; }
     .hero .wrap { grid-template-columns: 1fr; gap: 2.5rem; }
     .project { grid-template-columns: 1fr; }
+    .pipeline-demo { grid-template-columns: 1fr; gap: 1.5rem; }
+    .cluster { height: 300px; }
     .menu-toggle { display: inline-flex; }
     .nav {
       display: none;
@@ -313,6 +384,7 @@
       <span class="bar"></span><span class="bar"></span><span class="bar"></span>
     </button>
     <nav class="nav" id="siteNav" aria-label="Sections">
+      <a href="#terminal">Terminal</a>
       <a href="#results">Results</a>
       <a href="#experience">Experience</a>
       <a href="#projects">Projects</a>
@@ -339,21 +411,43 @@
         </div>
       </div>
 
-      <div class="run" role="img" aria-label="A CI/CD pipeline run with stages for checkout, build, test, security scan, quality gate, image push and ArgoCD sync, all passing and deploying to production.">
-        <div class="run-head">
-          <span><span class="file">deploy.yml</span> <span class="branch">on main</span></span>
-          <span class="badge" data-state="passed" id="runBadge">passed</span>
+      <div class="cluster-wrap">
+        <div class="cluster" id="cluster" role="img" aria-label="A 3D Kubernetes-style cluster: a control plane linked to three worker nodes, with pods orbiting each node. Now and then a pod restarts and recovers on its own.">
+          <div class="cluster-foot" aria-hidden="true"><span id="clusterStatus">cluster: 3 nodes, 12 pods running</span><span>drag to rotate</span></div>
         </div>
-        <ol class="stages" aria-hidden="true">
-          <li class="stage" data-state="passed"><span class="icon"></span><span>checkout<span class="detail">git clone, main@a3f9c1e</span></span><span class="time">2s</span></li>
-          <li class="stage" data-state="passed"><span class="icon"></span><span>build<span class="detail">multi-stage, distroless image</span></span><span class="time">41s</span></li>
-          <li class="stage" data-state="passed"><span class="icon"></span><span>test<span class="detail">unit and lint checks</span></span><span class="time">18s</span></li>
-          <li class="stage" data-state="passed"><span class="icon"></span><span>trivy scan<span class="detail">filesystem and image, 0 critical</span></span><span class="time">23s</span></li>
-          <li class="stage" data-state="passed"><span class="icon"></span><span>sonarqube<span class="detail">quality gate passed</span></span><span class="time">31s</span></li>
-          <li class="stage" data-state="passed"><span class="icon"></span><span>docker push<span class="detail">tag bumped in Helm chart</span></span><span class="time">12s</span></li>
-          <li class="stage" data-state="passed"><span class="icon"></span><span>argocd sync<span class="detail">EKS cluster, self-heal on</span></span><span class="time">34s</span></li>
-        </ol>
-        <div class="run-foot" id="runFoot" aria-hidden="true">✓ Deployed to production in 2m 41s, zero manual steps</div>
+        <div class="legend" aria-hidden="true">
+          <span><i class="dot cp"></i>Control plane</span>
+          <span><i class="dot node"></i>Worker nodes</span>
+          <span><i class="dot pod"></i>Pods</span>
+          <span><i class="dot heal"></i>Self-healing restart</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="terminal">
+    <div class="wrap">
+      <h2>Explore from the terminal</h2>
+      <p class="sub">Prefer the command line? Type <code>help</code> to see what you can ask, or tap a command below.</p>
+
+      <div class="term">
+        <div class="term-head"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>bijit@portfolio: ~</span></div>
+        <div class="term-body" id="termBody">
+          <div class="term-out" id="termOut" aria-live="polite"></div>
+          <form class="term-line" id="termForm" autocomplete="off">
+            <label for="termInput" class="p">bijit@portfolio:~$</label>
+            <input id="termInput" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Type a terminal command">
+          </form>
+        </div>
+      </div>
+
+      <div class="term-chips" aria-label="Suggested commands">
+        <button class="chip" type="button" data-cmd="help">help</button>
+        <button class="chip" type="button" data-cmd="whoami">whoami</button>
+        <button class="chip" type="button" data-cmd="projects">projects</button>
+        <button class="chip" type="button" data-cmd="skills">skills</button>
+        <button class="chip" type="button" data-cmd="kubectl get pods">kubectl get pods</button>
+        <button class="chip" type="button" data-cmd="sudo hire-me">sudo hire-me</button>
       </div>
     </div>
   </section>
@@ -435,6 +529,29 @@
     <div class="wrap">
       <h2>Projects</h2>
       <p class="sub">Open-source pipelines you can inspect end to end on GitHub.</p>
+
+      <div class="pipeline-demo">
+      <div class="run" role="img" aria-label="A CI/CD pipeline run with stages for checkout, build, test, security scan, quality gate, image push and ArgoCD sync, all passing and deploying to production.">
+        <div class="run-head">
+          <span><span class="file">deploy.yml</span> <span class="branch">on main</span></span>
+          <span class="badge" data-state="passed" id="runBadge">passed</span>
+        </div>
+        <ol class="stages" aria-hidden="true">
+          <li class="stage" data-state="passed"><span class="icon"></span><span>checkout<span class="detail">git clone, main@a3f9c1e</span></span><span class="time">2s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>build<span class="detail">multi-stage, distroless image</span></span><span class="time">41s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>test<span class="detail">unit and lint checks</span></span><span class="time">18s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>trivy scan<span class="detail">filesystem and image, 0 critical</span></span><span class="time">23s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>sonarqube<span class="detail">quality gate passed</span></span><span class="time">31s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>docker push<span class="detail">tag bumped in Helm chart</span></span><span class="time">12s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>argocd sync<span class="detail">EKS cluster, self-heal on</span></span><span class="time">34s</span></li>
+        </ol>
+        <div class="run-foot" id="runFoot" aria-hidden="true">✓ Deployed to production in 2m 41s, zero manual steps</div>
+      </div>
+        <div class="pipeline-note">
+          <h3>What every release goes through</h3>
+          <p>Each commit is checked out, built into a distroless image, tested, scanned by Trivy and gated by SonarQube. Only then is the image pushed, the Helm chart tag bumped, and ArgoCD left to sync the cluster. No one deploys by hand.</p>
+        </div>
+      </div>
 
       <div class="projects">
         <article class="project">
@@ -600,10 +717,14 @@
     var stages = Array.prototype.slice.call(document.querySelectorAll('.stage'));
     var badge = document.getElementById('runBadge');
     var foot = document.getElementById('runFoot');
-    stages.forEach(function (s) { s.dataset.state = 'pending'; });
-    badge.dataset.state = 'running';
-    badge.textContent = 'running';
-    foot.hidden = true;
+    var panel = document.querySelector('.run');
+    function reset() {
+      stages.forEach(function (s) { s.dataset.state = 'pending'; });
+      badge.dataset.state = 'running';
+      badge.textContent = 'running';
+      foot.hidden = true;
+    }
+    reset();
     var i = 0;
     function next() {
       if (i > 0) stages[i - 1].dataset.state = 'passed';
@@ -617,7 +738,288 @@
         foot.hidden = false;
       }
     }
-    setTimeout(next, 500);
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) { io.disconnect(); setTimeout(next, 300); }
+      }, { threshold: 0.4 });
+      io.observe(panel);
+    } else { setTimeout(next, 500); }
+  })();
+
+  (function () {
+    var out = document.getElementById('termOut');
+    var body = document.getElementById('termBody');
+    var form = document.getElementById('termForm');
+    var input = document.getElementById('termInput');
+    var history = [], hIndex = 0;
+
+    var EMAIL = 'bijit987kalita@gmail.com';
+    var GH = 'https://github.com/bijit5';
+    var LI = 'https://www.linkedin.com/in/bijit-kalita/';
+    function link(url, text) { return '<a href="' + url + '" target="_blank" rel="noopener">' + text + '</a>'; }
+    function esc(t) { return t.replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+    var commands = {
+      help: function () {
+        return [
+          '<span class="hl">Available commands</span>',
+          '  whoami            who I am',
+          '  experience        where I’ve worked',
+          '  projects          open-source pipelines',
+          '  skills            my toolbox',
+          '  education         degrees and awards',
+          '  contact           how to reach me',
+          '  resume            download my resume',
+          '  github, linkedin  open my profiles',
+          '  ls, cat <file>    look around',
+          '  clear             clear the screen',
+          '<span class="dim">Tip: use Tab to autocomplete and ↑ ↓ for history. A few hidden commands exist too.</span>'
+        ].join('\n');
+      },
+      whoami: function () {
+        return '<span class="hl">Bijit Kalita</span>, DevOps & Cloud Automation Engineer at GenLeadAI.\n' +
+          'I build infrastructure and pipelines that provision, scan, deploy and heal themselves,\n' +
+          'and AI-powered automation that runs in production. Gold Medalist, B.Tech CSE (CGPA 9.46).\n' +
+          '<span class="ok">Status: open to full-time DevOps, Cloud and SRE roles.</span>';
+      },
+      experience: function () {
+        return '<span class="hl">GenLeadAI</span>  <span class="dim">June 2026 – present</span>\n' +
+          '  DevOps, Cloud & MarTech Automation Engineer\n' +
+          '  ARIA SaaS backend, 10+ production workflows, dashboard latency 11s → 0.18s\n\n' +
+          '<span class="hl">Freelance</span>  <span class="dim">April 2024 – May 2026</span>\n' +
+          '  DevOps Engineer and Open-Source Contributor\n' +
+          '  AWS/EKS with Terraform, CI/CD with security gates, GitOps with ArgoCD';
+      },
+      projects: function () {
+        return '<span class="hl">1.</span> DevOpsified Go Web App    ' + link(GH + '/devosified_go-app', 'repo') + '\n' +
+          '   GitHub Actions + Helm + ArgoCD, 50% faster deployments\n' +
+          '<span class="hl">2.</span> CI/CD Pipeline, Blogging App  ' + link(GH + '/Blogging-App-Devops', 'repo') + '\n' +
+          '   10-stage Jenkins, dual Trivy scans, SonarQube, EKS via Terraform\n' +
+          '<span class="hl">3.</span> Scalable Apps with ArgoCD  ' + link(GH + '/automated_with_ArgoCD_Kubernetes', 'repo') + '\n' +
+          '   Kubernetes on AWS, 99.9% uptime, zero config drift';
+      },
+      skills: function () {
+        return '<span class="hl">cloud</span>       AWS (EC2, S3, EKS, IAM, VPC), Terraform, Ansible\n' +
+          '<span class="hl">containers</span>  Docker, Kubernetes, Helm\n' +
+          '<span class="hl">ci/cd</span>       GitHub Actions, Jenkins, ArgoCD\n' +
+          '<span class="hl">security</span>    Trivy, SonarQube, RBAC, OAuth 2.0\n' +
+          '<span class="hl">backend</span>     Python, Bash, FastAPI, Node.js, MongoDB\n' +
+          '<span class="hl">automation</span>  n8n, Zoho CRM API, WhatsApp Business API, Meta Ads API';
+      },
+      education: function () {
+        return '<span class="hl">B.Tech, Computer Science</span>  Royal Global University, 2018 – 2022\n' +
+          '  Gold Medalist · CGPA 9.46 · Dean’s List 2021–22\n' +
+          '<span class="hl">Higher Secondary, Science</span>  Cotton College, 2015 – 2017\n' +
+          '  State Rank 6, HSLC 2015';
+      },
+      contact: function () {
+        return 'email     <a href="mailto:' + EMAIL + '">' + EMAIL + '</a>\n' +
+          'linkedin  ' + link(LI, 'linkedin.com/in/bijit-kalita') + '\n' +
+          'github    ' + link(GH, 'github.com/bijit5');
+      },
+      resume: function () {
+        var a = document.createElement('a'); a.href = 'resume.pdf'; a.download = ''; document.body.appendChild(a); a.click(); a.remove();
+        return '<span class="ok">Downloading resume.pdf…</span> If nothing happens, <a href="resume.pdf" download>click here</a>.';
+      },
+      github: function () { window.open(GH, '_blank', 'noopener'); return 'Opening ' + link(GH, 'github.com/bijit5') + '…'; },
+      linkedin: function () { window.open(LI, '_blank', 'noopener'); return 'Opening ' + link(LI, 'linkedin.com/in/bijit-kalita') + '…'; },
+      ls: function () { return '<span class="hl">experience/  projects/  skills/</span>  contact.txt  resume.pdf'; },
+      date: function () { return new Date().toString(); },
+      history: function () { return history.map(function (h, i) { return '  ' + (i + 1) + '  ' + esc(h); }).join('\n') || 'No history yet.'; },
+      clear: function () { out.innerHTML = ''; return null; },
+      'kubectl get pods': function () {
+        return '<div class="tbl"><span class="dim">NAME                     READY   STATUS             RESTARTS</span>\n' +
+          'devops-engineer-0        1/1     <span class="ok">Running</span>            0\n' +
+          'cloud-infra-7f9c         1/1     <span class="ok">Running</span>            0\n' +
+          'ai-automation-5d2a       1/1     <span class="ok">Running</span>            0\n' +
+          'gold-medal-2022          1/1     <span class="ok">Completed</span>          0\n' +
+          'free-time-0              0/1     <span class="err">CrashLoopBackOff</span>   42</div>';
+      },
+      'sudo hire-me': function () {
+        return '[sudo] password for recruiter: ********\n' +
+          '<span class="ok">Access granted.</span> Great decision.\n' +
+          'Next step: <a href="mailto:' + EMAIL + '?subject=Let%E2%80%99s%20talk%20about%20a%20role">email Bijit</a> and let’s talk.';
+      },
+      'rm -rf /': function () { return '<span class="err">Nice try.</span> Permission denied, and this cluster self-heals anyway.'; },
+      exit: function () { return 'There’s no escape. Try <span class="hl">contact</span> instead.'; }
+    };
+
+    function print(html, cls) {
+      var d = document.createElement('div');
+      if (cls) d.className = cls;
+      d.innerHTML = html;
+      out.appendChild(d);
+    }
+
+    function run(raw) {
+      var cmd = raw.trim().replace(/\s+/g, ' ');
+      print('<span class="p">bijit@portfolio:~$</span> ' + esc(cmd), 'cmd');
+      if (!cmd) { body.scrollTop = body.scrollHeight; return; }
+      history.push(cmd); hIndex = history.length;
+      var key = cmd.toLowerCase();
+      var result;
+      if (commands[key]) result = commands[key]();
+      else if (key.indexOf('cat ') === 0) {
+        var f = key.slice(4);
+        if (f === 'contact.txt') result = commands.contact();
+        else if (f === 'resume.pdf') result = 'That’s a binary file. Try <span class="hl">resume</span> to download it.';
+        else result = '<span class="err">cat: ' + esc(f) + ': No such file or directory</span>';
+      }
+      else if (key.indexOf('cd ') === 0) {
+        var dir = key.slice(3).replace(/\/$/, '');
+        result = commands[dir] ? commands[dir]() : '<span class="err">cd: ' + esc(dir) + ': No such directory</span>';
+      }
+      else if (key.indexOf('echo ') === 0) result = esc(cmd.slice(5));
+      else if (key === 'sudo') result = 'usage: sudo <span class="hl">hire-me</span>';
+      else result = '<span class="err">command not found: ' + esc(cmd) + '</span>\nType <span class="hl">help</span> to see what I can do.';
+      if (result !== null) print(result);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    form.addEventListener('submit', function (e) { e.preventDefault(); run(input.value); input.value = ''; });
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowUp') {
+        if (hIndex > 0) { hIndex--; input.value = history[hIndex]; }
+        e.preventDefault();
+      } else if (e.key === 'ArrowDown') {
+        if (hIndex < history.length - 1) { hIndex++; input.value = history[hIndex]; }
+        else { hIndex = history.length; input.value = ''; }
+        e.preventDefault();
+      } else if (e.key === 'Tab') {
+        var v = input.value.toLowerCase();
+        if (!v) return;
+        var match = Object.keys(commands).filter(function (k) { return k.indexOf(v) === 0; });
+        if (match.length === 1) { input.value = match[0]; e.preventDefault(); }
+        else if (match.length > 1) { print(match.join('   '), 'dim'); body.scrollTop = body.scrollHeight; e.preventDefault(); }
+      }
+    });
+
+    body.addEventListener('click', function (e) {
+      if (e.target.tagName !== 'A' && !window.getSelection().toString()) input.focus({ preventScroll: true });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (btn) {
+      btn.addEventListener('click', function () { run(btn.dataset.cmd); });
+    });
+
+    print('<span class="hl">Welcome to bijit-os v2026.10</span>');
+    print('<span class="dim">Type</span> help <span class="dim">to get started, or try</span> whoami<span class="dim">.</span>');
+  })();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  (function () {
+    var el = document.getElementById('cluster');
+    var statusEl = document.getElementById('clusterStatus');
+    var renderer;
+    try {
+      if (!window.THREE) throw new Error('no three');
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (e) { document.documentElement.classList.add('no-webgl'); return; }
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var W = el.clientWidth, H = el.clientHeight;
+    var scene = new THREE.Scene();
+    var cam = new THREE.PerspectiveCamera(40, W / H, 0.1, 100);
+    cam.position.set(0, 3.4, 9.6); cam.lookAt(0, -0.2, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(W, H);
+    el.insertBefore(renderer.domElement, el.firstChild);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    var light = new THREE.DirectionalLight(0xffffff, 0.9); light.position.set(4, 6, 5); scene.add(light);
+
+    function cssColor(name) { return new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue(name).trim()); }
+
+    var g = new THREE.Group(); scene.add(g);
+    var cpMat = new THREE.MeshStandardMaterial({ flatShading: true, roughness: 0.4 });
+    var cp = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 0), cpMat); g.add(cp);
+    var lineMat = new THREE.LineBasicMaterial();
+    var ringMat = new THREE.MeshBasicMaterial();
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(3, 0.015, 8, 120), ringMat); ring.rotation.x = Math.PI / 2; g.add(ring);
+    var nodeMat = new THREE.MeshStandardMaterial({ roughness: 0.5 });
+    var pods = [], nodes = [];
+    for (var i = 0; i < 3; i++) {
+      var a = i / 3 * Math.PI * 2, x = Math.cos(a) * 3, z = Math.sin(a) * 3;
+      var n = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.55, 0.95), nodeMat);
+      n.position.set(x, 0, z); g.add(n); nodes.push(n);
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(x, 0, z)]), lineMat));
+      for (var j = 0; j < 4; j++) {
+        var m = new THREE.Mesh(new THREE.SphereGeometry(0.15, 18, 18), new THREE.MeshStandardMaterial({ roughness: 0.3 }));
+        g.add(m); pods.push({ m: m, node: n, ang: j / 4 * Math.PI * 2, spd: 0.8 + Math.random() * 0.4, down: 0 });
+      }
+    }
+    var colors = {};
+    function applyColors() {
+      colors.pod = cssColor('--pass'); colors.heal = cssColor('--minus');
+      cpMat.color = cssColor('--accent'); nodeMat.color = cssColor('--node');
+      lineMat.color = cssColor('--line'); ringMat.color = cssColor('--line');
+      pods.forEach(function (p) { p.m.material.color.copy(p.down > 0 ? colors.heal : colors.pod); });
+    }
+    applyColors();
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { applyColors(); if (reduce) render(); });
+
+    var drag = false, px = 0, py = 0, ry = 0.3, rx = 0.12;
+    el.addEventListener('pointerdown', function (e) { drag = true; px = e.clientX; py = e.clientY; });
+    window.addEventListener('pointerup', function () { drag = false; });
+    window.addEventListener('pointercancel', function () { drag = false; });
+    window.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      ry += (e.clientX - px) * 0.008;
+      if (e.pointerType === 'mouse') rx = Math.max(-0.35, Math.min(0.55, rx + (e.clientY - py) * 0.004));
+      px = e.clientX; py = e.clientY;
+      if (reduce) render();
+    });
+
+    function placePods() {
+      pods.forEach(function (p) {
+        p.m.position.set(p.node.position.x + Math.cos(p.ang) * 0.8, 0.55 + Math.sin(p.ang * 2) * 0.08, p.node.position.z + Math.sin(p.ang) * 0.8);
+      });
+    }
+    function render() { g.rotation.y = ry; g.rotation.x = rx; placePods(); renderer.render(scene, cam); }
+
+    var clock = new THREE.Clock(), nextFail = 3, visible = true, running = false;
+    function tick() {
+      if (!visible) { running = false; return; }
+      running = true;
+      var dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+      if (!drag) ry += 0.0035;
+      cp.rotation.y += 0.01; cp.position.y = Math.sin(t * 1.5) * 0.08;
+      if (t > nextFail) {
+        var k = pods[Math.floor(Math.random() * pods.length)];
+        if (!k.down) { k.down = 1.6; k.m.material.color.copy(colors.heal); statusEl.textContent = 'pod restarting… self-healing'; }
+        nextFail = t + 2.5 + Math.random() * 2.5;
+      }
+      var down = 0;
+      pods.forEach(function (p) {
+        p.ang += dt * p.spd;
+        if (p.down > 0) {
+          p.down -= dt; down++;
+          p.m.scale.setScalar(0.6 + 0.4 * Math.abs(Math.sin(t * 8)));
+          if (p.down <= 0) { p.m.material.color.copy(colors.pod); p.m.scale.setScalar(1); }
+        }
+      });
+      if (!down) statusEl.textContent = 'cluster: 3 nodes, 12 pods running';
+      render();
+      requestAnimationFrame(tick);
+    }
+
+    if (reduce) { render(); }
+    else {
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (entries) {
+          visible = entries[0].isIntersecting;
+          if (visible && !running) { clock.getDelta(); tick(); }
+        }).observe(el);
+      } else { tick(); }
+    }
+
+    window.addEventListener('resize', function () {
+      W = el.clientWidth; H = el.clientHeight;
+      cam.aspect = W / H; cam.updateProjectionMatrix(); renderer.setSize(W, H);
+      if (reduce) render();
+    });
   })();
 </script>
 </body>
