@@ -79,6 +79,18 @@
   .nav a { text-decoration: none; color: var(--muted); font-size: .95rem; white-space: nowrap; }
   .nav a:hover { color: var(--ink); }
 
+  .menu-toggle {
+    display: none;
+    width: 2.5rem; height: 2.5rem;
+    padding: 0; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--surface); color: var(--ink); cursor: pointer;
+    flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  }
+  .menu-toggle .bar { display: block; width: 18px; height: 2px; background: currentColor; border-radius: 2px; transition: transform .2s, opacity .2s; }
+  .menu-toggle[aria-expanded="true"] .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .menu-toggle[aria-expanded="true"] .bar:nth-child(2) { opacity: 0; }
+  .menu-toggle[aria-expanded="true"] .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
   /* Hero */
   .hero { padding: 4.5rem 0 4rem; }
   .hero .wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: 3.5rem; align-items: center; }
@@ -267,11 +279,22 @@
     .hero { padding: 3rem 0; }
     .hero .wrap { grid-template-columns: 1fr; gap: 2.5rem; }
     .project { grid-template-columns: 1fr; }
-    .nav { gap: 1rem; }
+    .menu-toggle { display: inline-flex; }
+    .nav {
+      display: none;
+      position: absolute; top: 3.5rem; left: 0; right: 0;
+      flex-direction: column; gap: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      padding: .5rem 1.5rem 1rem;
+      box-shadow: 0 12px 24px rgba(0,0,0,.12);
+    }
+    .nav.open { display: flex; }
+    .nav a { padding: .85rem 0; border-bottom: 1px solid var(--line); font-size: 1.05rem; color: var(--ink); }
+    .nav a:last-child { border-bottom: 0; }
   }
   @media (max-width: 520px) {
     .wrap { padding: 0 1.1rem; }
-    .brand { display: none; }
     .stage .detail { display: none; }
     section.block { padding: 3.5rem 0; }
   }
@@ -286,7 +309,10 @@
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#top">Bijit Kalita</a>
-    <nav class="nav" aria-label="Sections">
+    <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+    <nav class="nav" id="siteNav" aria-label="Sections">
       <a href="#results">Results</a>
       <a href="#experience">Experience</a>
       <a href="#projects">Projects</a>
@@ -302,7 +328,6 @@
   <section class="hero">
     <div class="wrap">
       <div>
-        <p class="where">Guwahati, India. Open to full-time DevOps, Cloud and SRE roles worldwide.</p>
         <h1>Bijit Kalita</h1>
         <p class="role">DevOps & Cloud Automation Engineer</p>
         <p class="lede">I build cloud infrastructure and pipelines that provision, scan, deploy and heal themselves on AWS, Kubernetes and GitOps. Alongside that, I build AI-powered automation and SaaS backends, and ship production websites fast with AI-assisted development.</p>
@@ -553,6 +578,22 @@
 </footer>
 
 <script>
+  (function () {
+    var toggle = document.querySelector('.menu-toggle');
+    var nav = document.getElementById('siteNav');
+    function setOpen(open) {
+      nav.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+    toggle.addEventListener('click', function () { setOpen(!nav.classList.contains('open')); });
+    nav.addEventListener('click', function (e) { if (e.target.tagName === 'A') setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+    document.addEventListener('click', function (e) {
+      if (nav.classList.contains('open') && !nav.contains(e.target) && !toggle.contains(e.target)) setOpen(false);
+    });
+  })();
+
   (function () {
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce) return;
