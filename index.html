@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bijit Kalita – DevOps & Cloud Automation Engineer</title>
+<meta name="description" content="Bijit Kalita is a DevOps and Cloud Automation Engineer in Guwahati, India, working with AWS, Kubernetes, Terraform, GitOps, AI-powered automation and SaaS backends. Open to full-time DevOps, Cloud and SRE roles.">
+<meta property="og:title" content="Bijit Kalita – DevOps & Cloud Automation Engineer">
+<meta property="og:description" content="AWS, Kubernetes, Terraform, CI/CD and GitOps. Open to DevOps, Cloud and SRE roles.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #EEF1F4;
+    --surface: #FFFFFF;
+    --ink: #13202F;
+    --muted: #556273;
+    --line: #CDD5DE;
+    --accent: #A85F00;
+    --pass: #1E7F5C;
+    --minus: #B4373F;
+    --panel: #13202F;
+    --panel-ink: #DCE3EA;
+    --panel-muted: #8A98AA;
+    --panel-line: #24364D;
+    --panel-amber: #F2A93B;
+    --panel-pass: #4CC79A;
+    --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0E1A2B;
+      --surface: #142338;
+      --ink: #E6ECF2;
+      --muted: #93A1B3;
+      --line: #24364D;
+      --accent: #F2A93B;
+      --pass: #4CC79A;
+      --minus: #F07178;
+      --panel: #0A1422;
+      --panel-line: #1E2F45;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Top bar */
+  .top {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 3.5rem; }
+  .brand { font-weight: 600; text-decoration: none; }
+  .nav { display: flex; gap: 1.5rem; overflow-x: auto; }
+  .nav a { text-decoration: none; color: var(--muted); font-size: .95rem; white-space: nowrap; }
+  .nav a:hover { color: var(--ink); }
+
+  /* Hero */
+  .hero { padding: 4.5rem 0 4rem; }
+  .hero .wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: 3.5rem; align-items: center; }
+  .where { color: var(--muted); margin: 0 0 1.25rem; font-size: .98rem; }
+  h1 {
+    font-size: clamp(2.75rem, 7vw, 4.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+    margin: 0;
+  }
+  .role { font-size: clamp(1.15rem, 2.2vw, 1.4rem); font-weight: 500; margin: .75rem 0 1.25rem; color: var(--accent); }
+  .lede { max-width: 34em; margin: 0 0 2rem; color: var(--ink); }
+  .actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .7rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    text-decoration: none; font-weight: 500; font-size: .95rem;
+    background: var(--surface);
+    transition: border-color .15s;
+  }
+  .btn:hover { border-color: var(--ink); }
+  .btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .btn.primary:hover { opacity: .9; }
+
+  /* Pipeline run panel */
+  .run {
+    background: var(--panel);
+    color: var(--panel-ink);
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: .88rem;
+    overflow: hidden;
+    border: 1px solid var(--panel-line);
+  }
+  .run-head {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: .9rem 1.1rem;
+    border-bottom: 1px solid var(--panel-line);
+  }
+  .run-head .file { color: var(--panel-ink); }
+  .run-head .branch { color: var(--panel-muted); }
+  .badge {
+    font-size: .78rem; padding: .2rem .6rem; border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+  .badge[data-state="running"] { color: var(--panel-amber); }
+  .badge[data-state="passed"] { color: var(--panel-pass); }
+  .stages { list-style: none; margin: 0; padding: .5rem 0; }
+  .stage {
+    display: grid; grid-template-columns: 1.4rem 1fr auto; gap: .75rem; align-items: center;
+    padding: .45rem 1.1rem;
+    transition: opacity .2s;
+  }
+  .stage .detail { color: var(--panel-muted); display: block; font-size: .8rem; }
+  .stage .time { color: var(--panel-muted); font-size: .8rem; }
+  .icon { width: 1rem; height: 1rem; border-radius: 50%; display: inline-block; position: relative; }
+  .stage[data-state="pending"] { opacity: .4; }
+  .stage[data-state="pending"] .icon { border: 1.5px solid var(--panel-muted); }
+  .stage[data-state="pending"] .time { visibility: hidden; }
+  .stage[data-state="running"] .icon {
+    border: 2px solid var(--panel-line); border-top-color: var(--panel-amber);
+    animation: spin .7s linear infinite;
+  }
+  .stage[data-state="running"] .time { visibility: hidden; }
+  .stage[data-state="passed"] .icon { background: var(--panel-pass); }
+  .stage[data-state="passed"] .icon::after {
+    content: ""; position: absolute; left: 5px; top: 2px; width: 4px; height: 8px;
+    border: solid var(--panel); border-width: 0 2px 2px 0; transform: rotate(45deg);
+  }
+  .run-foot {
+    padding: .9rem 1.1rem; border-top: 1px solid var(--panel-line);
+    color: var(--panel-pass);
+    transition: opacity .3s;
+  }
+  .run-foot[hidden] { display: block; opacity: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Sections */
+  section.block { padding: 4.5rem 0; border-top: 1px solid var(--line); }
+  h2 { font-size: clamp(1.6rem, 3vw, 2rem); letter-spacing: -0.015em; margin: 0 0 .5rem; font-weight: 600; }
+  .sub { color: var(--muted); margin: 0 0 2.5rem; max-width: 40em; }
+
+  /* Results as a diff */
+  .diff {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-family: var(--mono);
+    font-size: .92rem;
+    overflow-x: auto;
+  }
+  .diff-head { padding: .75rem 1.25rem; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+  .diff-group { padding: .9rem 0; border-bottom: 1px solid var(--line); }
+  .diff-group:last-child { border-bottom: 0; }
+  .diff-line { display: grid; grid-template-columns: 1.5rem 1fr; padding: .15rem 1.25rem; white-space: nowrap; }
+  .diff-line.minus { color: var(--minus); background: color-mix(in srgb, var(--minus) 8%, transparent); }
+  .diff-line.plus { color: var(--pass); background: color-mix(in srgb, var(--pass) 9%, transparent); }
+  .diff-note { padding: .35rem 1.25rem 0 2.75rem; color: var(--muted); font-family: var(--sans); font-size: .9rem; white-space: normal; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* Experience timeline */
+  .timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+  .job { position: relative; padding: 0 0 3rem 2rem; }
+  .job:last-child { padding-bottom: 0; }
+  .job::before {
+    content: ""; position: absolute; left: -7px; top: .45rem;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--accent);
+  }
+  .job:first-child::before { background: var(--accent); }
+  .job-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .25rem 1.5rem; align-items: baseline; }
+  .job h3 { margin: 0; font-size: 1.2rem; font-weight: 600; }
+  .job .when { color: var(--muted); font-size: .95rem; }
+  .job .title { margin: .15rem 0 1rem; color: var(--muted); }
+  .job ul { margin: 0; padding-left: 1.1rem; max-width: 46em; }
+  .job li { margin-bottom: .55rem; }
+  .job li::marker { color: var(--accent); }
+
+  /* Projects */
+  .projects { display: grid; gap: 1.25rem; }
+  .project {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.75rem;
+    display: grid; grid-template-columns: 1fr auto; gap: 1rem 2rem;
+  }
+  .project h3 { margin: 0 0 .5rem; font-size: 1.2rem; font-weight: 600; }
+  .project p { margin: 0; max-width: 44em; color: var(--muted); }
+  .project .result { margin-top: .9rem; color: var(--ink); }
+  .project .result strong { color: var(--pass); font-weight: 600; }
+  .project .repo { align-self: start; }
+  .flow {
+    grid-column: 1 / -1;
+    list-style: none; margin: .5rem 0 0; padding: 0;
+    display: flex; flex-wrap: wrap; gap: .4rem;
+    font-family: var(--mono); font-size: .8rem;
+  }
+  .flow li {
+    padding: .3rem .6rem; border: 1px solid var(--line); border-radius: 4px; color: var(--ink);
+    display: inline-flex; align-items: center; gap: .4rem;
+  }
+  .flow li + li::before { content: ""; width: .5rem; height: 1px; background: var(--muted); margin-left: -.85rem; margin-right: .15rem; }
+
+  /* Beyond DevOps */
+  .areas { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem 3rem; }
+  .area { border-top: 3px solid var(--accent); padding-top: 1.25rem; }
+  .area h3 { margin: 0 0 .6rem; font-size: 1.2rem; font-weight: 600; }
+  .area p { margin: 0 0 1rem; color: var(--muted); }
+  .area ul { margin: 0 0 1rem; padding-left: 1.1rem; }
+  .area li { margin-bottom: .45rem; }
+  .area li::marker { color: var(--accent); }
+  .tools { font-family: var(--mono); font-size: .8rem; color: var(--muted); margin: 0; }
+
+  /* Skills */
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 3rem; margin: 0; }
+  .skill-row { padding: 1rem 0; border-bottom: 1px solid var(--line); }
+  .skill-row dt { font-weight: 600; margin-bottom: .25rem; }
+  .skill-row dd { margin: 0; color: var(--muted); }
+
+  /* Education */
+  .edu { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+  .edu-item { padding: 1.5rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+  .edu-item h3 { margin: 0 0 .25rem; font-size: 1.1rem; font-weight: 600; }
+  .edu-item .when { color: var(--muted); font-size: .95rem; margin: 0 0 .9rem; }
+  .edu-item ul { margin: 0; padding-left: 1.1rem; }
+  .edu-item li::marker { color: var(--accent); }
+  .medal { color: var(--accent); font-weight: 600; }
+
+  /* Contact */
+  .contact h2 { font-size: clamp(2rem, 5vw, 3.25rem); letter-spacing: -0.025em; line-height: 1.1; max-width: 16em; }
+  .email-big {
+    display: inline-block; margin: 1.5rem 0 2rem;
+    font-size: clamp(1.2rem, 3.2vw, 1.9rem); font-weight: 500;
+    text-decoration: none; border-bottom: 2px solid var(--accent);
+    word-break: break-all;
+  }
+  .email-big:hover { color: var(--accent); }
+
+  footer { padding: 2rem 0 3rem; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); }
+
+  @media (max-width: 860px) {
+    .hero { padding: 3rem 0; }
+    .hero .wrap { grid-template-columns: 1fr; gap: 2.5rem; }
+    .project { grid-template-columns: 1fr; }
+    .nav { gap: 1rem; }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 0 1.1rem; }
+    .brand { display: none; }
+    .stage .detail { display: none; }
+    section.block { padding: 3.5rem 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">Bijit Kalita</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#results">Results</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#beyond">AI & automation</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="where">Guwahati, India. Open to full-time DevOps, Cloud and SRE roles worldwide.</p>
+        <h1>Bijit Kalita</h1>
+        <p class="role">DevOps & Cloud Automation Engineer</p>
+        <p class="lede">I build cloud infrastructure and pipelines that provision, scan, deploy and heal themselves on AWS, Kubernetes and GitOps. Alongside that, I build AI-powered automation and SaaS backends, and ship production websites fast with AI-assisted development.</p>
+        <div class="actions">
+          <a class="btn primary" href="mailto:bijit987kalita@gmail.com">Email me</a>
+          <a class="btn" href="resume.pdf" download>Download resume</a>
+          <a class="btn" href="https://github.com/bijit5" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="https://www.linkedin.com/in/bijit-kalita/" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+
+      <div class="run" role="img" aria-label="A CI/CD pipeline run with stages for checkout, build, test, security scan, quality gate, image push and ArgoCD sync, all passing and deploying to production.">
+        <div class="run-head">
+          <span><span class="file">deploy.yml</span> <span class="branch">on main</span></span>
+          <span class="badge" data-state="passed" id="runBadge">passed</span>
+        </div>
+        <ol class="stages" aria-hidden="true">
+          <li class="stage" data-state="passed"><span class="icon"></span><span>checkout<span class="detail">git clone, main@a3f9c1e</span></span><span class="time">2s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>build<span class="detail">multi-stage, distroless image</span></span><span class="time">41s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>test<span class="detail">unit and lint checks</span></span><span class="time">18s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>trivy scan<span class="detail">filesystem and image, 0 critical</span></span><span class="time">23s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>sonarqube<span class="detail">quality gate passed</span></span><span class="time">31s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>docker push<span class="detail">tag bumped in Helm chart</span></span><span class="time">12s</span></li>
+          <li class="stage" data-state="passed"><span class="icon"></span><span>argocd sync<span class="detail">EKS cluster, self-heal on</span></span><span class="time">34s</span></li>
+        </ol>
+        <div class="run-foot" id="runFoot" aria-hidden="true">✓ Deployed to production in 2m 41s, zero manual steps</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="results">
+    <div class="wrap">
+      <h2>Measured results</h2>
+      <p class="sub">What changed after my work went live, from production systems at GenLeadAI and freelance AWS and EKS deployments.</p>
+
+      <div class="diff">
+        <div class="diff-head">results.diff</div>
+
+        <div class="diff-group">
+          <div class="diff-line minus"><span aria-hidden="true">-</span><span><span class="sr-only">Before: </span>ops dashboard query latency: 11s</span></div>
+          <div class="diff-line plus"><span aria-hidden="true">+</span><span><span class="sr-only">After: </span>ops dashboard query latency: 0.18s</span></div>
+          <div class="diff-line minus"><span aria-hidden="true">-</span><span><span class="sr-only">Before: </span>key API response: 11s</span></div>
+          <div class="diff-line plus"><span aria-hidden="true">+</span><span><span class="sr-only">After: </span>key API response: 0.039s</span></div>
+          <p class="diff-note">Migrated a React, FastAPI and MongoDB dashboard off a no-code platform to Dockerized self-hosted infrastructure, with TTL caching and fixes for critical auth and data-integrity bugs.</p>
+        </div>
+
+        <div class="diff-group">
+          <div class="diff-line plus"><span aria-hidden="true">+</span><span>deployment time: 70% faster</span></div>
+          <div class="diff-line plus"><span aria-hidden="true">+</span><span>release process automated: 90%</span></div>
+          <p class="diff-note">CI/CD pipelines on GitHub Actions and Jenkins with Trivy and SonarQube security gates on every release.</p>
+        </div>
+
+        <div class="diff-group">
+          <div class="diff-line plus"><span aria-hidden="true">+</span><span>uptime: 99.9%, configuration drift: zero</span></div>
+          <p class="diff-note">GitOps with ArgoCD self-healing on Kubernetes, with EKS clusters provisioned through Terraform.</p>
+        </div>
+
+        <div class="diff-group">
+          <div class="diff-line plus"><span aria-hidden="true">+</span><span>leads reached per campaign cycle: 1,000+</span></div>
+          <p class="diff-note">10+ scheduled workflows across n8n, Zoho CRM and the WhatsApp Business API, running in production.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="experience">
+    <div class="wrap">
+      <h2>Experience</h2>
+      <p class="sub">Production infrastructure, automation and SaaS backend work.</p>
+
+      <ol class="timeline">
+        <li class="job">
+          <div class="job-head">
+            <h3>GenLeadAI</h3>
+            <span class="when">June 2026 – Present</span>
+          </div>
+          <p class="title">DevOps, Cloud & MarTech Automation Engineer</p>
+          <ul>
+            <li>Own end-to-end marketing automation for webinar and lead-nurture campaigns using n8n, Zoho CRM, Convonite and the WhatsApp Business API, running 10+ scheduled workflows that reach 1,000+ leads per cycle.</li>
+            <li>Designing the product and backend architecture for ARIA, an AI-powered multi-tenant sales automation SaaS (FastAPI, MongoDB, React) spanning 83 backend modules and 80+ data collections for autonomous lead capture, enrichment and outreach.</li>
+            <li>Built a real-time analytics and automated ROI reporting dashboard integrating Zoho CRM v8 (self-managed OAuth 2.0), Meta Ads and GA4, with fault-tolerant scheduled jobs and auto-emailed reports.</li>
+            <li>Migrated a full-stack ops dashboard from a no-code platform to Dockerized self-hosted infrastructure on a VPS, cutting query latency from 11s to 0.18s and a key API from 11s to 0.039s.</li>
+            <li>Built a Git-based deployment pipeline from Lovable to Hostinger for 2 production sites with live DNS cutovers, and integrated Sanity CMS with an SEO-safe 301 redirect map.</li>
+          </ul>
+        </li>
+        <li class="job">
+          <div class="job-head">
+            <h3>Freelance</h3>
+            <span class="when">April 2024 – May 2026</span>
+          </div>
+          <p class="title">DevOps Engineer and Open-Source Contributor</p>
+          <ul>
+            <li>Architected and deployed cloud-native applications on AWS (EC2, EKS, S3, VPC, IAM) with Terraform for fully repeatable infrastructure and zero manual provisioning.</li>
+            <li>Engineered multi-stage CI/CD pipelines on GitHub Actions and Jenkins with Trivy filesystem and image scanning and SonarQube quality gates, cutting deployment time by 70% and automating 90% of releases.</li>
+            <li>Implemented GitOps with ArgoCD on EKS for self-healing, zero-touch deployments with 99.9% uptime and zero configuration drift.</li>
+            <li>Containerised applications with multi-stage distroless Docker builds deployed through Helm, halving image size and removing all manual deployment steps.</li>
+            <li>Enforced RBAC, least-privilege IAM and dual-layer security scanning on every release pipeline.</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="projects">
+    <div class="wrap">
+      <h2>Projects</h2>
+      <p class="sub">Open-source pipelines you can inspect end to end on GitHub.</p>
+
+      <div class="projects">
+        <article class="project">
+          <div>
+            <h3>DevOpsified Go Web App</h3>
+            <p>A Go web application taken from source to Kubernetes with full GitOps. Multi-stage distroless Docker builds and a four-stage GitHub Actions pipeline that updates the Helm chart tag and lets ArgoCD sync the cluster.</p>
+            <p class="result"><strong>50% faster deployments</strong> with zero manual deployment steps.</p>
+          </div>
+          <a class="btn repo" href="https://github.com/bijit5/devosified_go-app" target="_blank" rel="noopener">View on GitHub</a>
+          <ol class="flow" aria-label="Pipeline stages">
+            <li>build and test</li><li>lint</li><li>docker push</li><li>helm tag update</li><li>argocd sync</li>
+          </ol>
+        </article>
+
+        <article class="project">
+          <div>
+            <h3>CI/CD Pipeline for a Blogging App</h3>
+            <p>A ten-stage Jenkins pipeline for a Java Spring Boot app, with dual Trivy scanning, SonarQube analysis, Nexus artifact publishing and deployment to EKS provisioned through Terraform with RBAC.</p>
+            <p class="result"><strong>90% deployment automation</strong> with two layers of security scanning on every release.</p>
+          </div>
+          <a class="btn repo" href="https://github.com/bijit5/Blogging-App-Devops" target="_blank" rel="noopener">View on GitHub</a>
+          <ol class="flow" aria-label="Pipeline stages">
+            <li>compile</li><li>test</li><li>trivy fs</li><li>sonarqube</li><li>nexus publish</li><li>trivy image</li><li>docker push</li><li>eks deploy</li>
+          </ol>
+        </article>
+
+        <article class="project">
+          <div>
+            <h3>Scalable Apps on AWS with ArgoCD</h3>
+            <p>Scalable applications on AWS EC2 running on Kubernetes, with ArgoCD driving automated updates from Git and self-healing any drift from the declared state.</p>
+            <p class="result"><strong>99.9% uptime</strong>, a 60% efficiency gain and zero configuration drift.</p>
+          </div>
+          <a class="btn repo" href="https://github.com/bijit5/automated_with_ArgoCD_Kubernetes" target="_blank" rel="noopener">View on GitHub</a>
+          <ol class="flow" aria-label="Pipeline stages">
+            <li>git commit</li><li>argocd detect</li><li>kubernetes apply</li><li>self-heal</li>
+          </ol>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="beyond">
+    <div class="wrap">
+      <h2>AI, automation and fast delivery</h2>
+      <p class="sub">The same engineering habits applied beyond infrastructure: systems that run on their own, and products shipped quickly without cutting corners.</p>
+
+      <div class="areas">
+        <div class="area">
+          <h3>AI and marketing automation</h3>
+          <p>Automation that captures, nurtures and reports on leads without anyone pressing a button.</p>
+          <ul>
+            <li>10+ scheduled workflows reaching 1,000+ leads per campaign cycle over WhatsApp and email</li>
+            <li>Webinar confirmation, reminder and follow-up sequences across CRM and messaging</li>
+            <li>Automated ROI reporting from CRM, ad and analytics data, emailed on a schedule</li>
+          </ul>
+          <p class="tools">n8n, Zoho CRM API, WhatsApp Business API, Meta Ads API, GA4, Resend</p>
+        </div>
+
+        <div class="area">
+          <h3>AI-powered SaaS backends</h3>
+          <p>Backend architecture for ARIA, a multi-tenant AI platform that finds, enriches and contacts leads on its own.</p>
+          <ul>
+            <li>83 backend modules and 80+ data collections</li>
+            <li>Multi-tenant design with self-managed OAuth 2.0 integrations</li>
+            <li>Fault-tolerant scheduled jobs and caching tuned for sub-second responses</li>
+          </ul>
+          <p class="tools">FastAPI, MongoDB, React, Python, Docker</p>
+        </div>
+
+        <div class="area">
+          <h3>AI-assisted web delivery</h3>
+          <p>Production websites built quickly with AI tools, then given a proper engineering finish: version control, deployment and DNS.</p>
+          <ul>
+            <li>Git-based deployment pipeline from Lovable to Hostinger for production sites</li>
+            <li>Live DNS cutovers and SEO-safe 301 redirect maps</li>
+            <li>Headless CMS and e-commerce integrations</li>
+          </ul>
+          <p class="tools">Lovable, Claude, Sanity CMS, Shopify, WordPress, DNS</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="skills">
+    <div class="wrap">
+      <h2>Skills</h2>
+      <p class="sub">Tools I use in production and in my own projects.</p>
+      <dl class="skills">
+        <div class="skill-row"><dt>Cloud and infrastructure as code</dt><dd>AWS (EC2, S3, EKS, IAM, VPC), Terraform, Ansible, Hostinger VPS and Cloud</dd></div>
+        <div class="skill-row"><dt>Containers and orchestration</dt><dd>Docker, Docker Compose, Kubernetes, Helm</dd></div>
+        <div class="skill-row"><dt>CI/CD and GitOps</dt><dd>GitHub Actions, Jenkins, ArgoCD, Git branching strategies</dd></div>
+        <div class="skill-row"><dt>Security</dt><dd>Trivy (filesystem and image), SonarQube, RBAC, OAuth 2.0, SPF and DKIM</dd></div>
+        <div class="skill-row"><dt>Languages and backend</dt><dd>Python, Bash, FastAPI, React, Node.js, MongoDB and MongoDB Atlas, Supabase</dd></div>
+        <div class="skill-row"><dt>Automation and APIs</dt><dd>n8n, Zoho CRM automation and API, WhatsApp Business API, Convonite, Meta Ads API, GA4, Resend</dd></div>
+        <div class="skill-row"><dt>Web and CMS</dt><dd>Lovable, Sanity CMS, Shopify (Liquid, Flow), WordPress, DNS management</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="block" id="education">
+    <div class="wrap">
+      <h2>Education</h2>
+      <p class="sub">Top of my B.Tech batch.</p>
+      <div class="edu">
+        <div class="edu-item">
+          <h3>Royal Global University, Guwahati</h3>
+          <p class="when">B.Tech in Computer Science and Engineering, 2018 – 2022</p>
+          <ul>
+            <li><span class="medal">Gold Medalist</span>, 2022 CSE undergraduate batch</li>
+            <li>CGPA 9.46</li>
+            <li>Dean’s List, 2021–22</li>
+          </ul>
+        </div>
+        <div class="edu-item">
+          <h3>Cotton College</h3>
+          <p class="when">Higher Secondary, Science, 2015 – 2017</p>
+          <ul>
+            <li>State Rank 6, HSLC 2015</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block contact" id="contact">
+    <div class="wrap">
+      <h2>Looking for a DevOps or Cloud engineer? Let’s talk.</h2>
+      <a class="email-big" href="mailto:bijit987kalita@gmail.com">bijit987kalita@gmail.com</a>
+      <div class="actions">
+        <a class="btn primary" href="resume.pdf" download>Download resume</a>
+        <a class="btn" href="https://www.linkedin.com/in/bijit-kalita/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="https://github.com/bijit5" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">© 2026 Bijit Kalita. Hand-built HTML, deployed from GitHub.</div>
+</footer>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    var stages = Array.prototype.slice.call(document.querySelectorAll('.stage'));
+    var badge = document.getElementById('runBadge');
+    var foot = document.getElementById('runFoot');
+    stages.forEach(function (s) { s.dataset.state = 'pending'; });
+    badge.dataset.state = 'running';
+    badge.textContent = 'running';
+    foot.hidden = true;
+    var i = 0;
+    function next() {
+      if (i > 0) stages[i - 1].dataset.state = 'passed';
+      if (i < stages.length) {
+        stages[i].dataset.state = 'running';
+        i++;
+        setTimeout(next, 420 + Math.random() * 320);
+      } else {
+        badge.dataset.state = 'passed';
+        badge.textContent = 'passed';
+        foot.hidden = false;
+      }
+    }
+    setTimeout(next, 500);
+  })();
+</script>
+</body>
+</html>
