@@ -235,8 +235,8 @@
     color: var(--panel-ink); font: inherit; caret-color: var(--panel-amber);
   }
   .fake-cursor {
-    width: .6em; height: 2px; background: var(--panel-amber);
-    align-self: flex-end; margin-bottom: .35em; margin-right: -.3rem;
+    width: 2px; height: 1.2em; background: var(--panel-amber);
+    border-radius: 1px; margin-right: -.25rem;
     animation: blink 1s steps(1) infinite; flex: none;
   }
   .term-line:focus-within .fake-cursor, .term-line.has-text .fake-cursor { display: none; }
@@ -446,6 +446,7 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     * { animation: none !important; transition: none !important; }
+    .term-line .fake-cursor { animation: blink 1s steps(1) infinite !important; }
   }
 </style>
 </head>
