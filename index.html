@@ -413,6 +413,24 @@
   }
   .email-big:hover { color: var(--accent); }
 
+  .mail-dialog {
+    width: min(92vw, 26rem); padding: 1.5rem 1.5rem 1.25rem;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--surface); color: var(--ink);
+    box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  }
+  .mail-dialog::backdrop { background: rgba(8, 14, 24, .55); backdrop-filter: blur(2px); }
+  .mail-close-row { display: flex; justify-content: flex-end; margin: -.5rem -.5rem 0 0; }
+  .mail-x { background: none; border: 0; color: var(--muted); font-size: 1.1rem; cursor: pointer; padding: .25rem .5rem; border-radius: 6px; }
+  .mail-x:hover { color: var(--ink); }
+  .mail-dialog h3 { margin: 0 0 .35rem; font-size: 1.25rem; font-weight: 600; }
+  .mail-sub { margin: 0 0 1.25rem; color: var(--muted); font-size: .95rem; word-break: break-word; }
+  .mail-sub strong { color: var(--ink); font-weight: 500; }
+  .mail-options { display: grid; gap: .6rem; }
+  .mail-options .btn { justify-content: center; cursor: pointer; font-family: inherit; color: var(--ink); }
+  .mail-options .btn.primary { color: var(--bg); }
+  .mail-note { margin: .9rem 0 0; min-height: 1.2em; font-size: .9rem; color: var(--pass); text-align: center; }
+
   footer { padding: 2rem 0 3rem; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); }
 
   @media (max-width: 860px) {
@@ -804,6 +822,19 @@
 
 </main>
 
+<dialog class="mail-dialog" id="mailDialog" aria-labelledby="mailTitle">
+  <form method="dialog" class="mail-close-row"><button class="mail-x" aria-label="Close">✕</button></form>
+  <h3 id="mailTitle">Send me an email</h3>
+  <p class="mail-sub">Choose how you’d like to write to <strong id="mailAddr">bijit987kalita@gmail.com</strong></p>
+  <div class="mail-options">
+    <a class="btn primary" id="mailGmail" target="_blank" rel="noopener">Open in Gmail</a>
+    <a class="btn" id="mailOutlook" target="_blank" rel="noopener">Open in Outlook</a>
+    <a class="btn" id="mailApp">Use my email app</a>
+    <button class="btn" type="button" id="mailCopy">Copy email address</button>
+  </div>
+  <p class="mail-note" id="mailNote" aria-live="polite"></p>
+</dialog>
+
 <footer>
   <div class="wrap">© 2026 Bijit Kalita. Hand-built HTML, deployed from GitHub.</div>
 </footer>
@@ -938,8 +969,8 @@
           'Start a project: <span class="hl">hire --freelance</span> or <a href="#freelance">see details</a>';
       },
       'hire --freelance': function () {
-        window.location.href = 'mailto:bijit987kalita@gmail.com?subject=Freelance%20project%20enquiry&body=Hi%20Bijit%2C%0D%0A%0D%0AWhat%20I%20need%3A%20%0D%0AMy%20business%2Fwebsite%3A%20%0D%0ABudget%20range%3A%20%0D%0AIdeal%20timeline%3A%20%0D%0A';
-        return '<span class="ok">Opening your email app…</span> Tell me what you need and I’ll reply with an approach and a quote.';
+        if (window.openMailDialog) window.openMailDialog('mailto:bijit987kalita@gmail.com?subject=Freelance%20project%20enquiry&body=Hi%20Bijit%2C%0D%0A%0D%0AWhat%20I%20need%3A%20%0D%0AMy%20business%2Fwebsite%3A%20%0D%0ABudget%20range%3A%20%0D%0AIdeal%20timeline%3A%20%0D%0A'); else window.location.href = 'mailto:bijit987kalita@gmail.com?subject=Freelance%20project%20enquiry&body=Hi%20Bijit%2C%0D%0A%0D%0AWhat%20I%20need%3A%20%0D%0AMy%20business%2Fwebsite%3A%20%0D%0ABudget%20range%3A%20%0D%0AIdeal%20timeline%3A%20%0D%0A';
+        return '<span class="ok">Opening email options…</span> Tell me what you need and I’ll reply with an approach and a quote.';
       },
       contact: function () {
         return 'email     <a href="mailto:' + EMAIL + '">' + EMAIL + '</a>\n' +
@@ -1037,6 +1068,63 @@
     print('<span class="hl">Welcome to bijit-os v2026.10</span>');
     print('<span class="ok">● Status: available for freelance projects.</span> <span class="dim">Type</span> freelance <span class="dim">to see services.</span>');
     print('<span class="dim">Type</span> help <span class="dim">to get started, or try</span> whoami<span class="dim">.</span>');
+  })();
+
+  (function () {
+    var dlg = document.getElementById('mailDialog');
+    if (!dlg || typeof dlg.showModal !== 'function') return; // very old browsers keep the plain mailto link
+    var gmail = document.getElementById('mailGmail');
+    var outlook = document.getElementById('mailOutlook');
+    var app = document.getElementById('mailApp');
+    var copyBtn = document.getElementById('mailCopy');
+    var note = document.getElementById('mailNote');
+    var title = document.getElementById('mailTitle');
+    var addrEl = document.getElementById('mailAddr');
+    var current = '';
+
+    function parse(href) {
+      var raw = href.replace(/^mailto:/i, '');
+      var parts = raw.split('?');
+      var to = decodeURIComponent(parts[0]);
+      var params = new URLSearchParams(parts[1] || '');
+      return { to: to, subject: params.get('subject') || '', body: params.get('body') || '' };
+    }
+
+    function open(href) {
+      var m = parse(href);
+      current = m.to;
+      var enc = encodeURIComponent;
+      title.textContent = /freelance/i.test(m.subject) ? 'Start a freelance project' : 'Send me an email';
+      addrEl.textContent = m.to;
+      gmail.href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + enc(m.to) + '&su=' + enc(m.subject) + '&body=' + enc(m.body);
+      outlook.href = 'https://outlook.live.com/mail/0/deeplink/compose?to=' + enc(m.to) + '&subject=' + enc(m.subject) + '&body=' + enc(m.body);
+      app.href = href;
+      note.textContent = '';
+      dlg.showModal();
+    }
+    window.openMailDialog = open;
+
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="mailto:"]');
+      if (!a || a.id === 'mailApp') return;
+      e.preventDefault();
+      open(a.getAttribute('href'));
+    });
+
+    [gmail, outlook, app].forEach(function (el) { el.addEventListener('click', function () { setTimeout(function () { dlg.close(); }, 150); }); });
+
+    copyBtn.addEventListener('click', function () {
+      function done() { note.textContent = 'Copied ' + current + ' to your clipboard.'; }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(current).then(done, function () { note.textContent = current; });
+      } else {
+        var t = document.createElement('textarea'); t.value = current; document.body.appendChild(t); t.select();
+        try { document.execCommand('copy'); done(); } catch (err) { note.textContent = current; }
+        t.remove();
+      }
+    });
+
+    dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
   })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
